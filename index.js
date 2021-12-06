@@ -32,12 +32,19 @@ function DKChart(props) {
         return degrees * (Math.PI / 180)
     }
 
-    function drawPartArc(radius, x, y, thickness, index, background) {
+    function drawPartArc(radius, x, y, thickness, indexDataset, background, itemIndex) {
         ctx.beginPath();
         const startDeg = 180;
-        radius -= index * thickness;
+        radius -= indexDataset * thickness;
+        const radius2 = radius - (indexDataset + 1) * thickness;
         ctx.arc( x, y, radius, getRadian( startDeg ), getRadian( startDeg + circumference ) );
-        const {pointX, pointY} = getPoint( x, y, radius, getRadian( 360 ) );
+        const {x: pointX, y: pointY} = getPoint( x, y, radius, getRadian( startDeg + circumference ) );
+        const {x: secondArcLastX, y: secondArcLastY} = getPoint( x, y, radius2, getRadian( startDeg + circumference ) );
+        ctx.moveTo(secondArcLastX, secondArcLastY);
+        ctx.lineTo(pointX, pointY);
+        // ctx.arc( x, y, radius, getRadian( startDeg ), getRadian( startDeg + circumference ) );
+        console.log(pointX, pointY);
+        console.log(secondArcLastX, secondArcLastY);
         ctx.stroke();
         ctx.closePath();
         ctx.restore();
@@ -46,10 +53,10 @@ function DKChart(props) {
     function drawArcs(radius, x, y) {
         const {datasets} = data;
         const thickness = (radius - (cutout * radius / 100)) / datasets.length;
-        datasets.forEach( (dataItem, index) => {
-            dataItem.data.forEach( (item, i) => {
+        datasets.forEach( (dataItem, indexDataset) => {
+            dataItem.data.forEach( (item, itemIndex) => {
                 const {background} = dataItem;
-                drawPartArc( radius, x, y, thickness, index, background[i] )
+                drawPartArc( radius, x, y, thickness, indexDataset, background[itemIndex], itemIndex )
             } )
         } );
 
@@ -82,10 +89,10 @@ const chart = new DKChart( {
                 data: [ 50, 100 ],
                 background: [ 'red', 'green' ]
             },
-            {
+            /*{
                 data: [ 150, 200 ],
                 background: [ 'red', 'green' ]
-            }
+            }*/
         ]
     },
     padding: {
