@@ -32,21 +32,23 @@ function DKChart(props) {
         return degrees * (Math.PI / 180)
     }
 
-    function drawPartArc(radius, x, y, thickness, indexDataset, background, itemIndex) {
-        ctx.beginPath();
-        const startDeg = 180;
+    function drawPartArc(radius, x, y, thickness, indexDataset, dataItem, itemIndex, startDeg, circumference) {
+        const {background = [], borderWidth = [], borderColor = []} = dataItem;
         radius -= indexDataset * thickness;
-        const radius2 = radius - (indexDataset + 1) * thickness;
+        const radius2 = radius - thickness;
+        const {x: arc1X1, y: arc1Y1} = getPoint( x, y, radius, getRadian( startDeg ) );
+        const {x: arc2X2, y: arc2Y2} = getPoint( x, y, radius2, getRadian( startDeg + circumference ) );
+        ctx.lineWidth = borderWidth[itemIndex] || 0;
+        ctx.strokeStyle = borderColor[itemIndex] || background[itemIndex] || "#000";
+        ctx.fillStyle = background[itemIndex] || "#ccc";
+        ctx.beginPath();
         ctx.arc( x, y, radius, getRadian( startDeg ), getRadian( startDeg + circumference ) );
-        const {x: pointX, y: pointY} = getPoint( x, y, radius, getRadian( startDeg + circumference ) );
-        const {x: secondArcLastX, y: secondArcLastY} = getPoint( x, y, radius2, getRadian( startDeg + circumference ) );
-        ctx.moveTo(secondArcLastX, secondArcLastY);
-        ctx.lineTo(pointX, pointY);
-        // ctx.arc( x, y, radius, getRadian( startDeg ), getRadian( startDeg + circumference ) );
-        console.log(pointX, pointY);
-        console.log(secondArcLastX, secondArcLastY);
-        ctx.stroke();
+        ctx.lineTo(arc2X2, arc2Y2);
+        ctx.arc( x, y, radius2, getRadian( startDeg + circumference ), getRadian( startDeg ), true );
+        ctx.lineTo(arc1X1, arc1Y1);
         ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
         ctx.restore();
     }
 
@@ -54,9 +56,13 @@ function DKChart(props) {
         const {datasets} = data;
         const thickness = (radius - (cutout * radius / 100)) / datasets.length;
         datasets.forEach( (dataItem, indexDataset) => {
+            const sumDataItem = dataItem.data.reduce((acc, current) => acc + current, 0);
+            let currentCircumference = 0;
+            let startDeg = 180;
             dataItem.data.forEach( (item, itemIndex) => {
-                const {background} = dataItem;
-                drawPartArc( radius, x, y, thickness, indexDataset, background[itemIndex], itemIndex )
+                startDeg += itemIndex > 0 ? (dataItem.data[itemIndex - 1] * circumference / sumDataItem) : 0;
+                currentCircumference = item * circumference / sumDataItem;
+                drawPartArc( radius, x, y, thickness, indexDataset, dataItem, itemIndex, startDeg, currentCircumference )
             } )
         } );
 
@@ -74,7 +80,6 @@ function DKChart(props) {
             const radius = Math.min( arcWidth, arcHeight ) / 2;
             drawArcs( radius, x, y )
         }
-
         draw();
     }
 }
@@ -86,13 +91,19 @@ const chart = new DKChart( {
     data: {
         datasets: [
             {
-                data: [ 50, 100 ],
-                background: [ 'red', 'green' ]
+                data: [ 50, 100, 50, 50, 100, 200, 10 ],
+                background: [ 'red', 'green', "#ccc", "pink", "orange", "yellow", "purple" ],
             },
-            /*{
+            {
                 data: [ 150, 200 ],
+                background: [ 'red', 'green' ],
+                borderWidth: [5,5],
+                borderColor: ["black", "brown"]
+            },
+            {
+                data: [ 10, 200 ],
                 background: [ 'red', 'green' ]
-            }*/
+            }
         ]
     },
     padding: {
@@ -102,5 +113,5 @@ const chart = new DKChart( {
         left: 10,
     },
     circumference: 150,
-    cutout: 80,
+    cutout: 60,
 } );
