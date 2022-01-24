@@ -33,13 +33,13 @@ function DKChart(props) {
     }
 
     function drawPartArc(radius, x, y, thickness, indexDataset, dataItem, itemIndex, startDeg, circumference) {
-        const {background = [], borderWidth = [], borderColor = []} = dataItem;
-        radius -= indexDataset * thickness;
+        const {background = [], borderWidth = 1, borderColor = []} = dataItem;
+        radius -= indexDataset * thickness + borderWidth / 2;
         const radius2 = radius - thickness;
         const {x: arc1X1, y: arc1Y1} = getPoint( x, y, radius, getRadian( startDeg ) );
         const {x: arc2X2, y: arc2Y2} = getPoint( x, y, radius2, getRadian( startDeg + circumference ) );
-        ctx.lineWidth = borderWidth[itemIndex] || 0;
-        ctx.strokeStyle = borderColor[itemIndex] || background[itemIndex] || "#000";
+        ctx.lineWidth = borderWidth;
+        ctx.strokeStyle = borderColor[itemIndex] || "#000";
         ctx.fillStyle = background[itemIndex] || "#ccc";
         ctx.beginPath();
         ctx.arc( x, y, radius, getRadian( startDeg ), getRadian( startDeg + circumference ) );
@@ -65,7 +65,6 @@ function DKChart(props) {
                 drawPartArc( radius, x, y, thickness, indexDataset, dataItem, itemIndex, startDeg, currentCircumference )
             } )
         } );
-
     }
 
     if (!isValid) {
@@ -93,16 +92,17 @@ const chart = new DKChart( {
             {
                 data: [ 50, 100, 50, 50, 100, 200, 10 ],
                 background: [ 'red', 'green', "#ccc", "pink", "orange", "yellow", "purple" ],
+                borderWidth: 5,
             },
             {
                 data: [ 150, 200 ],
                 background: [ 'red', 'green' ],
-                borderWidth: [5,5],
-                borderColor: ["black", "brown"]
+                borderWidth: 5,
             },
             {
                 data: [ 10, 200 ],
-                background: [ 'red', 'green' ]
+                background: [ 'red', 'green' ],
+                borderWidth: 5,
             }
         ]
     },
@@ -112,6 +112,6 @@ const chart = new DKChart( {
         bottom: 10,
         left: 10,
     },
-    circumference: 150,
+    circumference: 320,
     cutout: 60,
 } );
