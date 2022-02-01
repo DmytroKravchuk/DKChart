@@ -64,6 +64,12 @@ function DKChart(props) {
         return degrees * (Math.PI / 180)
     }
 
+    canvas.addEventListener( "click", e => {
+        const rect = canvas.getBoundingClientRect();
+        const eventX = e.clientX - rect.left;
+        const eventY = e.clientY - rect.top;
+    } );
+
     function drawPartArc(radius, x, y, thickness, indexDataset, dataItem, itemIndex, startDeg, circumference) {
         const {background = [], borderWidth = 1, borderColor = []} = dataItem;
         radius -= indexDataset * thickness + borderWidth / 2;
