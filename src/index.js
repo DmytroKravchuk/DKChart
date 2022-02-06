@@ -1,3 +1,6 @@
+// import Labels from "./js/labels";
+import '@styles/style.scss';
+
 const LABELS_BLOCK_SIZE_COEFFICIENT = 0.2;
 
 function DKChart(props) {
@@ -28,11 +31,11 @@ function DKChart(props) {
     canvas.setAttribute( 'width', width );
     canvas.setAttribute( 'height', height );
 
-    function validation(data) {
+    function validation() {
         return true;
     }
 
-    const isValid = validation( data );
+    const isValid = validation();
 
     function writeEmptyText(txt) {
         ctx.font = '18px Arial, sens-serif';
@@ -210,20 +213,20 @@ function DKChart(props) {
         }
     }
 
+    function draw() {
+        const {x, y, radius} = getCalculateArcRadiusAndCoordinates();
+        setLabels();
+        drawArcs( radius, x, y );
+    }
+
     if (!isValid) {
         writeEmptyText( 'Incorrect data!' );
     } else {
-        function draw() {
-            const {x, y, radius} = getCalculateArcRadiusAndCoordinates();
-            setLabels();
-            drawArcs( radius, x, y );
-        }
-
         draw();
     }
 }
 
-const chart = new DKChart( {
+new DKChart( {
     id: 'dkChart',
     width: 500,
     height: 500,
