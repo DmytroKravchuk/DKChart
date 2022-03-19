@@ -1,0 +1,1 @@
+export const LABELS_BLOCK_SIZE_COEFFICIENT = 0.2;

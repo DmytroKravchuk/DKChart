@@ -9,5 +9,19 @@ body {
 }
 
 canvas {
+    position: fixed;
+    left: 100px;
     border: 1px solid #000;
+}
+
+.dk-chart-tooltip {
+    display: none;
+    position: fixed;
+    padding: 2px;
+    border: 1px solid #000;
+    border-radius: 3px;
+    background-color: #fff;
+    &.active {
+        display: block;
+    }
 }
