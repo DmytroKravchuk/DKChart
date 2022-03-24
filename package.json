@@ -2,7 +2,7 @@
   "name": "chart",
   "version": "1.0.0",
   "description": "chart on the canvas",
-  "main": "src/index.js",
+  "main": "src/js/doughnut/index.js",
   "dependencies": {
     "@babel/polyfill": "^7.12.1"
   },
